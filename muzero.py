@@ -17,6 +17,7 @@ import diagnose_model
 import models
 import replay_buffer
 import self_play
+import play
 import shared_storage
 import trainer
 
@@ -395,6 +396,20 @@ class MuZero:
             )
         return result
 
+
+    def test_play(self, render=True, opponent=None, muzero_player=None, num_tests=1, num_gpus=0):
+        opponent = opponent if opponent else self.config.opponent
+        muzero_player = muzero_player if muzero_player else self.config.muzero_player
+        
+        
+        self_play_worker = play.SelfPlay(self.checkpoint, self.Game, self.config, numpy.random.randint(10000))
+        
+        for i in range(num_tests):
+            print(f"Testing {i+1}/{num_tests}")
+            self_play_worker.play_game(0, 0, render, opponent, self.config.muzero_player)
+            
+        self_play_worker.close_game()
+    
     def load_model(self, checkpoint_path=None, replay_buffer_path=None):
         """
         Load a model and/or a saved replay buffer.
@@ -646,9 +661,9 @@ if __name__ == "__main__":
             elif choice == 2:
                 muzero.diagnose_model(30)
             elif choice == 3:
-                muzero.test(render=True, opponent="self", muzero_player=None)
+                muzero.test_play(render=True, opponent="self", muzero_player=None)
             elif choice == 4:
-                muzero.test(render=True, opponent="human", muzero_player=0)
+                muzero.test_play(render=True, opponent='human', muzero_player=None)
             elif choice == 5:
                 env = muzero.Game()
                 env.reset()

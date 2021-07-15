@@ -57,7 +57,7 @@ class SelfPlay:
                     0,
                     self.config.temperature_threshold,
                     False,
-                    "self" if len(self.config.players) == 1 else self.config.opponent,
+                    "self" if len(self.config.players) == 1 or not self.config.opponent else self.config.opponent,
                     self.config.muzero_player,
                 )
 
